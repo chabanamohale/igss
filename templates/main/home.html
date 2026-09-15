@@ -1,0 +1,124 @@
+{% extends "public.html" %}
+{% from "partials/macros.html" import stat %}
+{% block title %}Government services in one place{% endblock %}
+
+{% block body %}
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <h1>Prove who you are once. Use it everywhere.</h1>
+      <p>Home Affairs verifies your national ID a single time. Traffic, Police,
+         Finance, Pensions and Passport Services then read the same profile —
+         so you stop carrying the same certified copies from counter to counter.</p>
+      <div class="hero-cta">
+        <a class="btn btn-straw" href="{{ url_for('auth.register') }}">Create your profile</a>
+        <a class="btn btn-outline" href="{{ url_for('main.services') }}">Browse {{ stats.services }} services</a>
+      </div>
+    </div>
+
+    {# The hero is the idea itself: one verified card, fanning out to six departments. #}
+    <div class="profile-card" aria-label="Example of a verified citizen profile">
+      <div class="pc-head">
+        <span class="avatar" style="background:var(--green-800)">TM</span>
+        <div>
+          <div class="pc-id">Thabo Mokoena</div>
+          <div class="small muted">National ID 4208119112 · Maseru</div>
+        </div>
+        <span class="badge badge-approved" style="margin-left:auto">Verified</span>
+      </div>
+      <div class="pc-fan">
+        <div style="--stripe:var(--dept-HA)">Identity and civil records</div>
+        <div style="--stripe:var(--dept-PAS)">Passport LS0491882</div>
+        <div style="--stripe:var(--dept-TRF)">Licence class B · A 4471</div>
+        <div style="--stripe:var(--dept-POL)">Clearance issued</div>
+        <div style="--stripe:var(--dept-FIN)">Tax account compliant</div>
+        <div style="--stripe:var(--dept-PEN)">Grant eligibility checked</div>
+      </div>
+      <p class="pc-note">Each department reads only the rows it is cleared for, and
+         every read is written to the audit log.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="grid grid-4">
+      {{ stat("Departments connected", stats.departments) }}
+      {{ stat("Services available", stats.services) }}
+      {{ stat("Registered profiles", stats.citizens) }}
+      {{ stat("Applications completed", stats.processed) }}
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="section-inner">
+    <h2>Departments on the system</h2>
+    <p class="muted">Each one owns its own records and decides what it shares.</p>
+    <div class="grid grid-3 mt-2">
+      {% for d in departments %}
+        <div class="dept-card" style="--stripe: {{ d.colour }}">
+          <h3>{{ d.name }}</h3>
+          <p>{{ d.description }}</p>
+          <p class="small mt-1">
+            <a href="{{ url_for('main.services', department=d.code) }}">
+              {{ d.services|length }} service{{ '' if d.services|length == 1 else 's' }}</a>
+          </p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="row-between flex-wrap mb-2">
+      <h2 class="mb-0">Commonly requested</h2>
+      <a href="{{ url_for('main.services') }}">See every service</a>
+    </div>
+    <div class="grid grid-3">
+      {% for s in featured %}
+        <a class="service-card" style="--stripe: {{ s.department.colour }};color:inherit"
+           href="{{ url_for('main.service_detail', code=s.code) }}">
+          <h3>{{ s.name }}</h3>
+          <p class="small muted">{{ s.description|truncate(90) }}</p>
+          <div class="svc-meta">
+            <span>{{ s.fee|money }}</span>
+            <span>{{ s.processing_days }} working days</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="section-inner">
+    <h2>How an application moves</h2>
+    <div class="grid grid-4 mt-2">
+      <div class="striped" style="--stripe:var(--green-700)">
+        <h4>You apply</h4>
+        <p class="small muted">Pick a service. Your details fill in from your
+           verified profile, and documents already on file are reused.</p>
+      </div>
+      <div class="striped" style="--stripe:var(--green-700)">
+        <h4>You pay</h4>
+        <p class="small muted">Settle the fee by mobile money or bank transfer and
+           get a receipt with a reference number.</p>
+      </div>
+      <div class="striped" style="--stripe:var(--green-700)">
+        <h4>The department works it</h4>
+        <p class="small muted">An officer claims the case, checks what their
+           department is cleared to see, and records a decision.</p>
+      </div>
+      <div class="striped" style="--stripe:var(--green-700)">
+        <h4>You collect</h4>
+        <p class="small muted">Status changes reach you as a notification, so you
+           travel to the office once — to collect.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

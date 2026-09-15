@@ -1,0 +1,49 @@
+{% extends "public.html" %}
+{% block title %}{{ service.name }}{% endblock %}
+{% block body %}
+<section class="section">
+  <div class="section-inner" style="max-width:860px">
+    <p class="small"><a href="{{ url_for('main.services') }}">Services</a> ·
+       {{ service.department.name }}</p>
+
+    <div class="striped mb-3" style="--stripe: {{ service.department.colour }}">
+      <h1 class="mb-1">{{ service.name }}</h1>
+      <p class="lead muted">{{ service.description }}</p>
+    </div>
+
+    <div class="grid grid-3 mb-3">
+      <div class="stat"><div class="stat-label">Fee</div>
+        <div class="stat-value">{{ service.fee|money }}</div></div>
+      <div class="stat"><div class="stat-label">Processing time</div>
+        <div class="stat-value">{{ service.processing_days }}</div>
+        <div class="stat-foot">working days</div></div>
+      <div class="stat"><div class="stat-label">Handled by</div>
+        <div class="stat-value" style="font-size:1rem;padding-top:.5rem">{{ service.department.name }}</div></div>
+    </div>
+
+    <div class="panel mb-3">
+      <div class="panel-head"><h2>What to bring</h2></div>
+      <div class="panel-body">
+        {% if service.document_list %}
+          <ul style="margin:0;padding-left:1.1rem">
+            {% for doc in service.document_list %}<li>{{ doc }}</li>{% endfor %}
+          </ul>
+          <p class="small muted mt-2">Anything already verified on your profile is
+             reused automatically — you will not be asked for it twice.</p>
+        {% else %}
+          <p class="mb-0 muted">No supporting documents are required.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if current_user.is_authenticated and current_user.is_citizen %}
+      <a class="btn btn-primary" href="{{ url_for('citizen.apply', code=service.code) }}">Apply for this service</a>
+    {% else %}
+      <div class="flex flex-wrap">
+        <a class="btn btn-primary" href="{{ url_for('auth.register') }}">Create a profile to apply</a>
+        <a class="btn btn-outline" href="{{ url_for('auth.login') }}">I already have one</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
